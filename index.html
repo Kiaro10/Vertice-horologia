@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Vértice Horologia</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,500&family=Instrument+Sans:wght@400;500&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#F7F6F2;--surface:#EFEDE6;--ink:#1A1C1E;--mute:#5E625F;--line:#D9D6CC;--bronze:#9A6B32;--on-ink:#F7F6F2;
+--serif:"Fraunces",Georgia,serif;--sans:"Instrument Sans",system-ui,sans-serif;--mono:"IBM Plex Mono",ui-monospace,monospace;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);color-scheme:light}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#16181A;--surface:#1F2225;--ink:#F1EFE8;--mute:#A4A8A3;--line:#33373A;--bronze:#C99352;--on-ink:#16181A;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#16181A;--surface:#1F2225;--ink:#F1EFE8;--mute:#A4A8A3;--line:#33373A;--bronze:#C99352;--on-ink:#16181A;color-scheme:dark}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:calc(72px + env(safe-area-inset-top,0px))}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 1.0625rem/1.6 var(--sans)}
+a{color:inherit}
+:focus-visible{outline:2px solid var(--bronze);outline-offset:3px}
+.wrap{max-width:1160px;margin:0 auto;padding:0 24px}
+h1,h2,h3{font-family:var(--serif);font-weight:300;line-height:1.08;margin:0;letter-spacing:-.01em}
+h1{font-size:clamp(2.6rem,6.4vw,5rem)}
+h2{font-size:clamp(1.9rem,3.6vw,2.8rem)}
+h3{font-size:1.4rem;font-weight:500}
+.mono{font-family:var(--mono);font-size:.82rem;letter-spacing:.01em}
+.mute{color:var(--mute)}
+/* header */
+header{position:sticky;top:0;z-index:20;background:var(--bg);border-bottom:1px solid var(--line)}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);background:var(--bg);z-index:30}
+.nav{display:flex;align-items:center;justify-content:space-between;height:72px}
+.logo{font-family:var(--serif);font-weight:500;font-size:1.45rem;letter-spacing:.32em;text-decoration:none}
+nav ul{display:flex;gap:32px;list-style:none;margin:0;padding:0}
+nav a{text-decoration:none;font-weight:500;font-size:.95rem}
+nav a:hover{color:var(--bronze)}
+.btn{display:inline-block;background:var(--ink);color:var(--on-ink);padding:12px 22px;text-decoration:none;font-weight:500;border:1px solid var(--ink);cursor:pointer;font:500 .95rem var(--sans);transition:background .2s,color .2s}
+.btn:hover{background:var(--bronze);border-color:var(--bronze);color:#fff}
+.btn.ghost{background:transparent;color:var(--ink)}
+.btn.ghost:hover{background:var(--ink);border-color:var(--ink);color:var(--on-ink)}
+.burger{display:none;background:none;border:1px solid var(--line);color:var(--ink);padding:8px 14px;font:500 .9rem var(--sans);cursor:pointer}
+@media(max-width:860px){
+ .burger{display:block}
+ nav{position:absolute;left:0;right:0;top:72px;background:var(--bg);border-bottom:1px solid var(--line);display:none;padding:12px 24px 24px}
+ nav.open{display:block}
+ nav ul{flex-direction:column;gap:14px;margin-bottom:18px}
+ .nav>.btn{display:none}
+}
+/* hero */
+.hero{display:grid;grid-template-columns:1.1fr .9fr;gap:56px;align-items:center;padding:72px 0 88px}
+.hero p{max-width:46ch;color:var(--mute);margin:24px 0 32px}
+.hero .actions{display:flex;gap:12px;flex-wrap:wrap}
+.hero-dial{width:100%;max-width:460px;justify-self:center}
+.hero-dial svg{width:100%;height:auto;display:block}
+.hero-meta{display:flex;gap:28px;margin-top:40px;padding-top:20px;border-top:1px solid var(--line);flex-wrap:wrap}
+.hero-meta div{display:flex;flex-direction:column}
+@media(max-width:860px){.hero{grid-template-columns:1fr;padding:40px 0 56px;gap:40px}}
+/* sections */
+section{padding:88px 0;border-top:1px solid var(--line)}
+.head{display:flex;justify-content:space-between;align-items:end;gap:24px;flex-wrap:wrap;margin-bottom:40px}
+.head p{max-width:44ch;margin:12px 0 0;color:var(--mute)}
+.filters{display:flex;gap:8px;flex-wrap:wrap}
+.chip{background:none;border:1px solid var(--line);color:var(--ink);padding:8px 16px;font:500 .9rem var(--sans);cursor:pointer;transition:all .2s}
+.chip:hover{border-color:var(--ink)}
+.chip[aria-pressed="true"]{background:var(--ink);color:var(--on-ink);border-color:var(--ink)}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:28px}
+@media(max-width:960px){.grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:600px){.grid{grid-template-columns:1fr}}
+.card{display:flex;flex-direction:column}
+.card .plate{background:var(--surface);aspect-ratio:1/1.05;display:grid;place-items:center;padding:28px;margin-bottom:16px}
+.card .plate svg{width:78%;height:auto}
+.card .row{display:flex;justify-content:space-between;gap:12px;align-items:baseline}
+.card p{margin:6px 0 12px;color:var(--mute);font-size:.98rem}
+.card .specs{display:flex;gap:16px;border-top:1px solid var(--line);padding-top:10px;color:var(--mute)}
+.card .price{color:var(--ink);font-weight:500}
+.card[hidden]{display:none}
+/* movimentos */
+.mov{background:var(--surface)}
+.tablewrap{overflow-x:auto;border:1px solid var(--line);background:var(--bg)}
+table{border-collapse:collapse;width:100%;min-width:720px}
+th,td{text-align:left;padding:16px 18px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font:500 .8rem var(--mono);color:var(--mute);white-space:nowrap}
+td.mono{white-space:nowrap}
+tr:last-child td{border-bottom:0}
+td strong{font-family:var(--serif);font-weight:500;font-size:1.15rem}
+.note{margin-top:20px;max-width:64ch;color:var(--mute)}
+/* guia */
+.guide{display:grid;grid-template-columns:.8fr 1.2fr;gap:56px}
+@media(max-width:860px){.guide{grid-template-columns:1fr;gap:28px}}
+details{border-bottom:1px solid var(--line);padding:18px 0}
+details:first-of-type{border-top:1px solid var(--line)}
+summary{cursor:pointer;font:500 1.2rem var(--serif);list-style:none;display:flex;justify-content:space-between;gap:16px}
+summary::-webkit-details-marker{display:none}
+summary::after{content:"+";font-family:var(--mono);color:var(--bronze);transition:transform .25s}
+details[open] summary::after{transform:rotate(45deg)}
+details p{margin:12px 0 0;color:var(--mute);max-width:58ch}
+/* sobre */
+.about{display:grid;grid-template-columns:1fr 1fr;gap:56px}
+.about p{margin:0 0 18px;color:var(--mute);max-width:58ch}
+.facts{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--line);border:1px solid var(--line);align-self:start}
+.facts div{background:var(--bg);padding:24px}
+.facts b{display:block;font:300 2.4rem var(--serif);color:var(--bronze)}
+@media(max-width:860px){.about{grid-template-columns:1fr;gap:32px}}
+/* footer */
+footer{background:var(--ink);color:var(--on-ink);padding:64px 0 40px}
+footer .cols{display:grid;grid-template-columns:1.4fr 1fr 1fr;gap:40px}
+footer .logo{display:inline-block;margin-bottom:12px}
+footer p,footer li{color:color-mix(in srgb,var(--on-ink) 70%,transparent);margin:0 0 8px;font-size:.95rem}
+footer ul{list-style:none;padding:0;margin:0}
+footer a{text-decoration:none}footer a:hover{color:var(--bronze)}
+footer h4{font:500 .8rem var(--mono);margin:0 0 14px;color:var(--on-ink)}
+.legal{margin-top:48px;padding-top:20px;border-top:1px solid color-mix(in srgb,var(--on-ink) 25%,transparent);font-size:.85rem}
+@media(max-width:700px){footer .cols{grid-template-columns:1fr}}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{transition:none!important}}
+</style>
+</head>
+<body>
+<header>
+ <div class="wrap nav">
+  <a class="logo" href="#topo" data-brand="logo">VÉRTICE</a>
+  <nav id="menu" aria-label="Principal">
+   <ul>
+    <li><a href="#colecoes">Coleções</a></li>
+    <li><a href="#movimentos">Movimentos</a></li>
+    <li><a href="#guia">Guia de Compra</a></li>
+    <li><a href="#sobre">Sobre</a></li>
+   </ul>
+  </nav>
+  <a class="btn" href="#colecoes">Explorar Catálogo</a>
+  <button class="burger" id="burger" aria-expanded="false" aria-controls="menu">Menu</button>
+ </div>
+</header>
+
+<main id="topo">
+ <div class="wrap hero">
+  <div>
+   <h1>O tempo medido com precisão, montado à mão.</h1>
+   <p>A <span data-brand="name">Vértice Horologia</span> desenha relógios mecânicos de caixa fina, calibres próprios e acabamentos feitos em bancada, em pequenas séries numeradas.</p>
+   <div class="actions">
+    <a class="btn" href="#colecoes">Explorar Catálogo</a>
+    <a class="btn ghost" href="#guia">Como escolher</a>
+   </div>
+   <div class="hero-meta mono">
+    <div><span class="mute">Calibre</span><span>V.04 automático</span></div>
+    <div><span class="mute">Reserva</span><span>72 h</span></div>
+    <div><span class="mute">Hora local</span><span id="clock">--:--:--</span></div>
+   </div>
+  </div>
+  <div class="hero-dial" id="heroDial" aria-label="Mostrador Vértice a mostrar a hora atual" role="img"></div>
+ </div>
+
+ <section id="colecoes">
+  <div class="wrap">
+   <div class="head">
+    <div>
+     <h2>Coleções</h2>
+     <p>Seis modelos em três famílias. Cada relógio é entregue com certificado de cronometria e número de série.</p>
+    </div>
+    <div class="filters" id="filters" role="group" aria-label="Filtrar por família">
+     <button class="chip" aria-pressed="true" data-f="todas">Todas</button>
+     <button class="chip" aria-pressed="false" data-f="Clássico">Clássico</button>
+     <button class="chip" aria-pressed="false" data-f="Desportivo">Desportivo</button>
+     <button class="chip" aria-pressed="false" data-f="Dress">Dress</button>
+    </div>
+   </div>
+   <div class="grid" id="grid"></div>
+  </div>
+ </section>
+
+ <section id="movimentos" class="mov">
+  <div class="wrap">
+   <div class="head">
+    <div>
+     <h2>Movimentos</h2>
+     <p>Quatro calibres desenvolvidos para a casa. Os dados abaixo são valores de certificação em bancada.</p>
+    </div>
+   </div>
+   <div class="tablewrap">
+    <table>
+     <thead><tr><th>Calibre</th><th>Tipo</th><th>Frequência</th><th>Reserva</th><th>Espessura</th><th>Rubis</th><th>Utilizado em</th></tr></thead>
+     <tbody>
+      <tr><td><strong>V.01</strong></td><td>Manual</td><td class="mono">21 600 A/h</td><td class="mono">60 h</td><td class="mono">2,9 mm</td><td class="mono">19</td><td>Aurora, Meridiano</td></tr>
+      <tr><td><strong>V.04</strong></td><td>Automático</td><td class="mono">28 800 A/h</td><td class="mono">72 h</td><td class="mono">3,8 mm</td><td class="mono">27</td><td>Nocturno, Travessia</td></tr>
+      <tr><td><strong>V.07</strong></td><td>Automático GMT</td><td class="mono">28 800 A/h</td><td class="mono">68 h</td><td class="mono">5,1 mm</td><td class="mono">31</td><td>Travessia GMT</td></tr>
+      <tr><td><strong>V.09</strong></td><td>Micro-rotor</td><td class="mono">28 800 A/h</td><td class="mono">64 h</td><td class="mono">3,1 mm</td><td class="mono">29</td><td>Zénite</td></tr>
+     </tbody>
+    </table>
+   </div>
+   <p class="note">Todos os calibres são regulados em cinco posições e testados durante 15 dias antes de seguirem para a caixa.</p>
+  </div>
+ </section>
+
+ <section id="guia">
+  <div class="wrap guide">
+   <div>
+    <h2>Guia de Compra</h2>
+    <p class="mute" style="margin-top:12px;max-width:36ch">Quatro perguntas que ajudam a escolher o relógio certo antes de olhar para o preço.</p>
+   </div>
+   <div>
+    <details open><summary>Que diâmetro de caixa me serve?</summary><p>Meça o pulso na parte mais larga. Até 16 cm, o ideal são caixas de 36 a 39 mm; entre 16 e 18 cm, de 39 a 41 mm. A distância entre as asas deve ficar dentro do pulso.</p></details>
+    <details><summary>Manual ou automático?</summary><p>O manual é mais fino e pede dar corda todos os dias, quase um ritual. O automático carrega-se com o movimento do braço e é mais prático para uso diário. Com reserva de 72 h, o V.04 aguenta um fim de semana parado.</p></details>
+    <details><summary>Que resistência à água preciso?</summary><p>30 m serve para uso urbano e chuva. 100 m permite nadar. Os modelos Desportivos têm 200 m e coroa roscada. Nunca acione a coroa dentro de água.</p></details>
+    <details><summary>Como cuido do relógio?</summary><p>Reveja a lubrificação a cada cinco a sete anos, evite campos magnéticos fortes e guarde-o com a coroa recolhida. A garantia Vértice Horologia cobre cinco anos de movimento.</p></details>
+   </div>
+  </div>
+ </section>
+
+ <section id="sobre">
+  <div class="wrap about">
+   <div>
+    <h2>Sobre a Vértice Horologia</h2>
+    <p style="margin-top:24px">Nascemos de uma oficina pequena com uma regra simples: só fazemos o que conseguimos acabar à mão. Cada caixa é polida em duas direções, cada ponte é chanfrada e cada mostrador é lacado em camadas.</p>
+    <p>Desenhamos linhas limpas, ponteiros legíveis e proporções que envelhecem bem. Produzimos poucas peças por ano, para que cada comprador conheça o relojoeiro que montou o seu relógio.</p>
+   </div>
+   <div class="facts mono">
+    <div><b>4</b>calibres próprios</div>
+    <div><b>5 anos</b>de garantia de movimento</div>
+    <div><b>15 dias</b>de teste por calibre</div>
+    <div><b>±4 s</b>de desvio diário máximo</div>
+   </div>
+  </div>
+ </section>
+</main>
+
+<footer>
+ <div class="wrap">
+  <div class="cols">
+   <div>
+    <a class="logo" href="#topo" data-brand="logo">VÉRTICE</a>
+    <p style="max-width:34ch">Relógios mecânicos em pequenas séries. Oficina e atendimento por marcação.</p>
+   </div>
+   <div>
+    <h4>Explorar</h4>
+    <ul><li><a href="#colecoes">Coleções</a></li><li><a href="#movimentos">Movimentos</a></li><li><a href="#guia">Guia de Compra</a></li><li><a href="#sobre">Sobre</a></li></ul>
+   </div>
+   <div>
+    <h4>Contacto</h4>
+    <ul><li>atelier@vertice-horologia.example</li><li class="mono">Seg a Sex, 10h às 18h</li></ul>
+   </div>
+  </div>
+  <p class="legal">© <span id="year">2026</span> <span data-brand="name">Vértice Horologia</span>. Marca fictícia criada para fins de demonstração.</p>
+ </div>
+</footer>
+
+<script>
+const BRAND={logo:"VÉRTICE",name:"Vértice Horologia"};
+document.querySelectorAll("[data-brand]").forEach(e=>e.textContent=BRAND[e.dataset.brand]);
+document.getElementById("year").textContent=new Date().getFullYear();
+
+/* mostrador SVG */
+function dial(o,live){
+ const c=200,ticks=[];
+ for(let i=0;i<60;i++){const a=i*6*Math.PI/180,big=i%5===0,r1=big?150:160,r2=168;
+  ticks.push(`<line x1="${c+r1*Math.sin(a)}" y1="${c-r1*Math.cos(a)}" x2="${c+r2*Math.sin(a)}" y2="${c-r2*Math.cos(a)}" stroke="${o.ink}" stroke-width="${big?3:1}"/>`);}
+ const ring=o.ring?`<circle cx="200" cy="200" r="190" fill="none" stroke="${o.ring}" stroke-width="10"/>`:"";
+ const win=o.date?`<rect x="262" y="187" width="34" height="26" fill="${o.bg}" stroke="${o.ink}" stroke-width="1"/><text x="279" y="206" text-anchor="middle" font-family="IBM Plex Mono,monospace" font-size="15" fill="${o.ink}">${new Date().getDate()}</text>`:"";
+ return `<svg viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg">
+ <rect x="168" y="0" width="64" height="60" fill="${o.case}"/><rect x="168" y="340" width="64" height="60" fill="${o.case}"/>
+ <circle cx="200" cy="200" r="196" fill="${o.case}"/>${ring}
+ <circle cx="200" cy="200" r="178" fill="${o.bg}"/>${ticks.join("")}
+ <text x="200" y="118" text-anchor="middle" font-family="Fraunces,serif" font-size="19" letter-spacing="7" fill="${o.ink}">VÉRTICE</text>
+ <text x="200" y="300" text-anchor="middle" font-family="IBM Plex Mono,monospace" font-size="10" fill="${o.ink}" opacity=".7">${o.cal}</text>${win}
+ <g ${live?'id="gh"':'transform="rotate(305 200 200)"'}><rect x="194" y="120" width="12" height="90" fill="${o.hand}"/></g>
+ <g ${live?'id="gm"':'transform="rotate(60 200 200)"'}><rect x="196" y="78" width="8" height="132" fill="${o.hand}"/></g>
+ ${live?`<g id="gs"><line x1="200" y1="226" x2="200" y2="52" stroke="#9A6B32" stroke-width="2"/></g>`:""}
+ <circle cx="200" cy="200" r="8" fill="${o.hand}"/></svg>`;
+}
+const P={
+ aco:{case:"#1A1C1E",bg:"#F3F1EA",ink:"#1A1C1E",hand:"#1A1C1E"},
+ ard:{case:"#1A1C1E",bg:"#2B3138",ink:"#EDE9DD",hand:"#E7E2D2",ring:"#9A6B32"},
+ oiro:{case:"#9A6B32",bg:"#F1E9D8",ink:"#3B2A14",hand:"#3B2A14"},
+ verde:{case:"#2A2D2F",bg:"#26382F",ink:"#EDE9DD",hand:"#E7E2D2"},
+ perola:{case:"#C9C5BA",bg:"#FBFAF6",ink:"#1A1C1E",hand:"#1A1C1E"},
+ azul:{case:"#1A1C1E",bg:"#243247",ink:"#EDE9DD",hand:"#E7E2D2",ring:"#5C6B80"}
+};
+const W=[
+ {n:"Aurora",f:"Clássico",d:"Duas agulhas, mostrador branco lacado.",c:"V.01",mm:"36 mm",p:"2 850 €",o:{...P.aco,cal:"V.01"}},
+ {n:"Meridiano",f:"Clássico",d:"Caixa em aço com fundo transparente.",c:"V.01",mm:"38 mm",p:"3 190 €",o:{...P.oiro,cal:"V.01"}},
+ {n:"Nocturno",f:"Dress",d:"Azul profundo, ponteiros facetados.",c:"V.04",mm:"39 mm",p:"4 200 €",o:{...P.azul,cal:"V.04",date:1}},
+ {n:"Zénite",f:"Dress",d:"Micro-rotor, apenas 7,4 mm de altura.",c:"V.09",mm:"37 mm",p:"5 650 €",o:{...P.perola,cal:"V.09"}},
+ {n:"Travessia",f:"Desportivo",d:"200 m, coroa roscada, bracelete em aço.",c:"V.04",mm:"41 mm",p:"4 480 €",o:{...P.verde,cal:"V.04",date:1}},
+ {n:"Travessia GMT",f:"Desportivo",d:"Segundo fuso horário e bisel bicolor.",c:"V.07",mm:"41 mm",p:"5 900 €",o:{...P.ard,cal:"V.07"}}
+];
+const grid=document.getElementById("grid");
+grid.innerHTML=W.map(w=>`<article class="card" data-f="${w.f}"><div class="plate">${dial(w.o)}</div>
+<div class="row"><h3>${w.n}</h3><span class="mono price">${w.p}</span></div><p>${w.d}</p>
+<div class="specs mono"><span>${w.c}</span><span>${w.mm}</span><span>${w.f}</span></div></article>`).join("");
+document.getElementById("filters").addEventListener("click",e=>{
+ const b=e.target.closest(".chip");if(!b)return;
+ document.querySelectorAll(".chip").forEach(x=>x.setAttribute("aria-pressed",x===b));
+ grid.querySelectorAll(".card").forEach(c=>c.hidden=b.dataset.f!=="todas"&&c.dataset.f!==b.dataset.f);
+});
+
+/* mostrador vivo */
+document.getElementById("heroDial").innerHTML=dial({...P.aco,cal:"CAL. V.04",date:1},true);
+const rot=(id,deg)=>{const g=document.getElementById(id);g.setAttribute("transform",`rotate(${deg} 200 200)`)};
+function tick(){
+ const d=new Date(),s=d.getSeconds()+d.getMilliseconds()/1000,m=d.getMinutes()+s/60,h=(d.getHours()%12)+m/60;
+ rot("gh",h*30);rot("gm",m*6);rot("gs",s*6);
+ document.getElementById("clock").textContent=d.toLocaleTimeString("pt-PT");
+}
+tick();setInterval(tick,1000/20);
+
+/* menu móvel */
+const bg=document.getElementById("burger"),mn=document.getElementById("menu");
+bg.addEventListener("click",()=>{const o=mn.classList.toggle("open");bg.setAttribute("aria-expanded",o)});
+mn.addEventListener("click",e=>{if(e.target.tagName==="A")mn.classList.remove("open")});
+</script>
+</body>
+</html>
